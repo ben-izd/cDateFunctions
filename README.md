@@ -24,7 +24,7 @@ How to use this Package:
 | "Cycle-2820-2" | Musa Akrami  | 2820 |
 | "Cycle-4166" | Ahmad Farmad | 4166 |
 
-Source in persian language : [www.magiran.com/paper/2219482](https://www.magiran.com/paper/2219482)
+Source : [www.magiran.com/paper/2219482?lang=en](https://www.magiran.com/paper/2219482?lang=en)
 
 ### Islamic
 | Method Name | Leap Years |

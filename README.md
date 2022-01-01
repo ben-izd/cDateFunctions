@@ -1,6 +1,8 @@
 # cDateFunctions
 Alternative to part of Wolfram Language built-in date calculation functions.
 
+> Source code of DLL files will be in [another repository](https://github.com/ben-izd/cDateFunctions-Source).
+
 This page is under construction.
 
 How to use this Package:

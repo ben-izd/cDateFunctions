@@ -35,7 +35,7 @@ Source : [www.magiran.com/paper/2219482?lang=en](https://www.magiran.com/paper/2
 | "Indian" | 2, 5, 8, 10, 13, 16, 19, 21, 24, 27, 29 |
 | "Habash al-Hasib" | 2, 5, 8, 11, 13, 16, 19, 21, 24, 27, 30 |
 
-### Arithmetic Persian Leap Cycles Visualization
+## Arithmetic Persian Leap Cycles Visualization
 
 ![Arithmetic Persian 128 Leap Cycle](https://i.postimg.cc/Vv9v1Y4m/arithmetic-persian-128-leap-cycle.jpg)
 

@@ -128,7 +128,7 @@ cDateFunctions`Private`ToDateListFormat[{year_,month_:1,day_:1,hour_:0,minute_:0
 SyntaxInformation[cUnixTime]={"ArgumentsPattern"->{_.,OptionsPattern[]}};
 Options[cUnixTime]={TimeZone:>$TimeZone};
 
-cUnixTime[OptionsPattern[]]:=cDateFunctions`LibraryLink`UnixTimeNowLink[]-OptionValue[TimeZone]*3600.
+cUnixTime[OptionsPattern[]]:=cDateFunctions`LibraryLink`UnixTimeNowLink[]+(OptionValue[TimeZone]-$TimeZone)*3600.(*-OptionValue[TimeZone]*3600.*)
 
 cUnixTime[date:_Integer|_Real,OptionsPattern[]]:=date-2208988800-OptionValue[TimeZone]*3600.
 
@@ -165,13 +165,15 @@ cFromAbsoluteTime[date:_Integer|_Real]:=DateObject[Append[cDateFunctions`Library
 cDateList::UnsupportedCalendar="Calendar type \"`1`\" is not supported.";
 Options[cDateList]={Method->Automatic,TimeZone:>$TimeZone};
 
-cDateList[]:=Append[cDateFunctions`LibraryLink`DateListNowLink[],cDateFunctions`LibraryLink`AbsoluteOnlySecondLink[]]
+cDateList[OptionsPattern[]]:=Block[{temp=cDateFunctions`LibraryLink`AbsoluteNowLink[]+OptionValue[TimeZone]*3600.},Append[cDateFunctions`LibraryLink`SecondToDateListLink[Floor@temp],Mod[temp,60]]]
+(*Append[cDateFunctions`LibraryLink`DateListNowLink[],cDateFunctions`LibraryLink`AbsoluteOnlySecondLink[]]*)
 
-cDateList[date:_Integer|_Real]:=Append[cDateFunctions`LibraryLink`SecondToDateListLink[Floor@date],Mod[date,60]]
+cDateList[date:_Integer|_Real,OptionsPattern[]]:=Block[{temp=date+(OptionValue[TimeZone]-$TimeZone)*3600.},Append[cDateFunctions`LibraryLink`SecondToDateListLink[Floor@temp],Mod[temp,60]]]
 
-cDateList[date:{Repeated[_Integer,{1,5}]}]:=Append[cDateFunctions`LibraryLink`DateListToDateListLink[date],0]
+cDateList[date:{Repeated[_Integer,{1,5}]},OptionsPattern[]]:=Block[{temp=QuotientRemainder[(OptionValue[TimeZone]-$TimeZone)*3600.,60]},Append[cDateFunctions`LibraryLink`DateListToDateListExtraLink[date,First@temp],Last@temp]]
+(*Append[cDateFunctions`LibraryLink`DateListToDateListLink[date],0]*)
 
-cDateList[{date:Repeated[_Integer,{5}],second:_Integer|_Real}]:=Block[{temp=QuotientRemainder[second,60]},
+cDateList[{date:Repeated[_Integer,{5}],second:_Integer|_Real},OptionsPattern[]]:=Block[{temp=QuotientRemainder[second+(OptionValue[TimeZone]-$TimeZone)*3600,60]},
 Append[cDateFunctions`LibraryLink`DateListToDateListExtraLink[{date},First@temp],Last@temp]]
 
 cDateList[DateObject[date_,_],OptionsPattern[]]:=cDateFunctions`Gregorian`SecondToDateList[cDateFunctions`Gregorian`DateListToSecond[date]+(OptionValue[TimeZone]-$TimeZone)*3600.]
@@ -180,7 +182,12 @@ cDateList[date:DateObject[_,_,type_,timeZone_],OptionsPattern[]]:=Switch[type,
 "ArithmeticPersian"(*|"AstronomicalPersian"*)|"Islamic",cCalendarConvert[cAbsoluteTime[First@date,CalendarType->type]+($TimeZone-timeZone)*3600.,"Gregorian",Method->OptionValue[Method]],
 _,Message[cDateList::UnsupportedCalendar,type]
 ]
-
+cDateList[date:DateObject[_,_,type_],OptionsPattern[]]:=Switch[type,
+"Gregorian",cDateFunctions`Gregorian`SecondToDateList[cDateFunctions`Gregorian`DateListToSecond[First@date]+($TimeZone-OptionValue[TimeZone])*3600.],
+"ArithmeticPersian"(*|"AstronomicalPersian"*)|"Islamic",cDateList[cAbsoluteTime[First@date,CalendarType->type,TimeZone->OptionValue[TimeZone],Method->OptionValue[Method]]],
+(*"ArithmeticPersian"(*|"AstronomicalPersian"*)|"Islamic",cCalendarConvert[cAbsoluteTime[First@date,CalendarType->type,TimeZone\[Rule]OptionValue[TimeZone],Method->OptionValue[Method]],"Gregorian",Method->OptionValue[Method]],*)
+_,Message[cDateList::UnsupportedCalendar,type]
+]
 
 
 
@@ -188,13 +195,15 @@ Options[cAbsoluteTime]={Method->Automatic,CalendarType->"Gregorian",TimeZone:>$T
 cAbsoluteTime::UnsupportedCalendar="Calendar \"`1`\" is not supported.";
 SyntaxInformation[cAbsoluteTime]={"ArgumentsPattern"->{_.,OptionsPattern[]}};
 
-cAbsoluteTime[]:=cDateFunctions`LibraryLink`AbsoluteNowLink[]
-
 (* special case for default *)
+cAbsoluteTime[]:=cDateFunctions`LibraryLink`AbsoluteNowLink[]+$TimeZone*3600.
+(*cAbsoluteTime[TimeZone->offset_]:=cDateFunctions`LibraryLink`AbsoluteNowLink[]+(offset-$TimeZone)*3600*)
+
 cAbsoluteTime[date:{Repeated[_Integer,{1,5}]}]:=cDateFunctions`LibraryLink`DateListToSecondLink[date]
 cAbsoluteTime[{date:Repeated[_Integer,{5}],second:_Integer|_Real}]:=cDateFunctions`LibraryLink`DateListToSecondLink[{date}]+second
 
 cAbsoluteTime[date:_Integer|_Real,OptionsPattern[]]:=date+(OptionValue[TimeZone]-$TimeZone)*3600.
+cAbsoluteTime[OptionsPattern[]]:=cDateFunctions`LibraryLink`AbsoluteNowLink[]+OptionValue[TimeZone]*3600.
 
 
 (*support for version 13 format*)
@@ -204,7 +213,7 @@ cAbsoluteTime[DateObject[date_,_]]:=cAbsoluteTime[date]
 cAbsoluteTime[DateObject[date_,_,"Gregorian",timeZone_:$TimeZone]]:=cAbsoluteTime[date]+($TimeZone-timeZone)*3600.
 
 
-cAbsoluteTime[TimeZone->offset_]:=cDateFunctions`LibraryLink`AbsoluteNowLink[]+(offset-$TimeZone)*3600
+
 
 cAbsoluteTime[{date:Repeated[_Integer,{5}],second:_Integer|_Real},OptionsPattern[]]:=Switch[OptionValue[CalendarType],
 "Gregorian",cDateFunctions`LibraryLink`DateListToSecondLink[{date}]+second+(OptionValue[TimeZone]-$TimeZone)*3600.,
@@ -214,9 +223,9 @@ cAbsoluteTime[{date:Repeated[_Integer,{5}],second:_Integer|_Real},OptionsPattern
 _,Message[cAbsoluteTime::UnsupportedCalendar,OptionValue[CalendarType]]
 ]
 
-cAbsoluteTime[date:{Repeated[_Integer,{1,5}]},OptionsPattern[]]:=cAbsoluteTime[PadRight[date,6],CalendarType->OptionValue[CalendarType],TimeZone->OptionValue[TimeZone]]
+cAbsoluteTime[date:{Repeated[_Integer,{1,5}]},OptionsPattern[]]:=cAbsoluteTime[PadRight[date,6],CalendarType->OptionValue[CalendarType],TimeZone->OptionValue[TimeZone],Method->OptionValue[Method]]
 
-cAbsoluteTime[DateObject[date_,_,type_:"Gregorian",timeZone_:$TimeZone],OptionsPattern[]]:=cAbsoluteTime[date,CalendarType->type,TimeZone->timeZone]
+cAbsoluteTime[DateObject[date_,_,type_:"Gregorian",timeZone_:$TimeZone],OptionsPattern[]]:=cAbsoluteTime[date,CalendarType->type,TimeZone->timeZone,Method->OptionValue[Method]]
 
 cAbsoluteTime[time_TimeObject]:=Dot[First@time,{3600,60,1}]
 
@@ -382,23 +391,28 @@ cDateFunctions`Private`YearViewGenerator[{offset_,start_,lengths:Repeated[_Integ
 Options[cMonthView]={CalendarType->Automatic,Method->Automatic,Order->Automatic};
 SyntaxInformation[cMonthView]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 cMonthView::UnsupportedCalendar="Calendar type \"`1`\" is not supported.";
-cMonthView[date:_Integer|_Real|{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},Optional[Pattern[title,Except[Rule]],Automatic],OptionsPattern[]]:=Switch[OptionValue[CalendarType],
+cMonthView[date:_Integer|_Real|{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},Optional[title:_String|_Symbol,Automatic],OptionsPattern[]]:=Switch[OptionValue[CalendarType],
 Automatic|"Gregorian",cDateFunctions`Private`MonthViewGenerator[cDateFunctions`Gregorian`MonthView[date],If[title===Automatic,StringRiffle[PadRight[date,2,1],"-"],title],If[OptionValue[Order]===Automatic,1,OptionValue[Order]]],
 "ArithmeticPersian",cDateFunctions`Private`MonthViewGenerator[cDateFunctions`ArithmeticPersian`MonthView[cDateFunctions`ArithmeticPersian`FindCycleID[OptionValue[Method]],date],If[title===Automatic,"[ArithmeticPersian] "<>StringRiffle[PadRight[date,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
-"AstronomicalPersian",cDateFunctions`Private`MonthViewGenerator[cDateFunctions`AstronomicalPersian`MonthView[date],If[title===Automatic,"[AstronomicalPersian] "<>StringRiffle[PadRight[date,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
+(*"AstronomicalPersian",cDateFunctions`Private`MonthViewGenerator[cDateFunctions`AstronomicalPersian`MonthView[date],If[title===Automatic,"[AstronomicalPersian] "<>StringRiffle[PadRight[date,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],*)
 "Islamic",cDateFunctions`Private`MonthViewGenerator[cDateFunctions`Islamic`MonthView[cDateFunctions`Islamic`FindCycleID[OptionValue[Method]],date],If[title===Automatic,"[Islamic] "<>StringRiffle[PadRight[date,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
 _,Message[cMonthView::UnsupportedCalendar,OptionValue[CalendarType]]
 ]
 
+
 Options[cPartialView]={CalendarType->Automatic,Method->Automatic,Order->Automatic};
 SyntaxInformation[cPartialView]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
 cPartialView::UnsupportedCalendar="Calendar type \"`1`\" is not supported.";
-cPartialView[start:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},end:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},Optional[Pattern[title,Except[Rule]],Automatic],OptionsPattern[]]:=Switch[OptionValue[CalendarType],
+(*cPartialView[start:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},end:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},Optional[title:_String|_Symbol,Automatic](*Optional[Pattern[title,Except[Rule]],Automatic]*),OptionsPattern[]]/;cAbsoluteTime[start]>cAbsoluteTime[end]:=cPartialView[end,start,title,Sequence@@Normal@AssociationMap[OptionValue[cPartialView,#]&,Keys@Options[cPartialView]]]*)
+cPartialView[startDate:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},endDate:{Repeated[_Integer,{1,5}]}|{Repeated[_Integer,{5}],_Real},Optional[title:_String|_Symbol,Automatic],OptionsPattern[]]:=Block[{start,end},
+If[cAbsoluteTime[startDate,CalendarType->OptionValue[CalendarType]]>cAbsoluteTime[endDate,CalendarType->OptionValue[CalendarType]],start=endDate;end=startDate;,start=startDate;end=endDate;];
+Switch[OptionValue[CalendarType],
 Automatic|"Gregorian",cDateFunctions`Private`YearViewGenerator[cDateFunctions`Gregorian`YearView[start,end],If[title===Automatic,StringRiffle[PadRight[start,3,1],"-"]<>" -> "<>StringRiffle[PadRight[cDateList@end,3,1],"-"],title],If[OptionValue[Order]===Automatic,1,OptionValue[Order]]],
 "ArithmeticPersian",cDateFunctions`Private`YearViewGenerator[cDateFunctions`ArithmeticPersian`YearView[cDateFunctions`ArithmeticPersian`FindCycleID[OptionValue[Method]],start,end],If[title===Automatic,"[ArithmeticPersian] "<>StringRiffle[PadRight[start,2,1],"-"]<>" -> "<>StringRiffle[PadRight[end,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
-"AstronomicalPersian",cDateFunctions`Private`YearViewGenerator[cDateFunctions`AstronomicalPersian`YearView[start,end],If[title===Automatic,"[AstronomicalPersian] "<>StringRiffle[PadRight[start,2,1],"-"]<>" -> "<>StringRiffle[PadRight[end,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
+(*"AstronomicalPersian",cDateFunctions`Private`YearViewGenerator[cDateFunctions`AstronomicalPersian`YearView[start,end],If[title===Automatic,"[AstronomicalPersian] "<>StringRiffle[PadRight[start,2,1],"-"]<>" -> "<>StringRiffle[PadRight[end,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],*)
 "Islamic",cDateFunctions`Private`YearViewGenerator[cDateFunctions`Islamic`YearView[cDateFunctions`Islamic`FindCycleID[OptionValue[Method]],start,end],If[title===Automatic,"[Islamic] "<>StringRiffle[PadRight[start,2,1],"-"]<>" -> "<>StringRiffle[PadRight[end,2,1],"-"],title],If[OptionValue[Order]===Automatic,2,OptionValue[Order]]],
 _,Message[cMonthView::UnsupportedCalendar,OptionValue[CalendarType]]
+]
 ]
 
 

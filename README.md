@@ -37,14 +37,15 @@ Source : [www.magiran.com/paper/2219482?lang=en](https://www.magiran.com/paper/2
 
 ## Arithmetic Persian Leap Cycles Visualization
 
-![Arithmetic Persian 128 Leap Cycle](https://i.postimg.cc/Vv9v1Y4m/arithmetic-persian-128-leap-cycle.jpg)
+<img src="https://i.postimg.cc/Znzn198w/arithmetic-persian-33-leap-cycle.jpg" width="750" alt="Arithmetic Persian 33 Leap Cycle">
 
-![Arithmetic Persian 2820 Leap Cycle](https://i.postimg.cc/bN8dgtNJ/arithmetic-persian-2820-1-leap-cycle.jpg)
+<img src="https://i.postimg.cc/Vv9v1Y4m/arithmetic-persian-128-leap-cycle.jpg" width="750" alt="Arithmetic Persian 128 Leap Cycle">
 
-![Arithmetic Persian 2820 Leap Cycle](https://i.postimg.cc/650qmpyh/arithmetic-persian-2820-2-leap-cycle.jpg)
+<img src="https://i.postimg.cc/bN8dgtNJ/arithmetic-persian-2820-1-leap-cycle.jpg" width="885" alt="Arithmetic Persian 2820 Leap Cycle">
 
-![Arithmetic Persian 2820 Leap Cycle](https://i.postimg.cc/Znzn198w/arithmetic-persian-33-leap-cycle.jpg)
+<img src="https://i.postimg.cc/650qmpyh/arithmetic-persian-2820-2-leap-cycle.jpg" width="750" alt="Arithmetic Persian 2820 Leap Cycle">
 
-![Arithmetic Persian 4166 Leap Cycle](https://i.postimg.cc/HWbVb2mR/arithmetic-persian-4166-leap-cycle.jpg)
+<img src="https://i.postimg.cc/HWbVb2mR/arithmetic-persian-4166-leap-cycle.jpg" width="750" alt="Arithmetic Persian 4166 Leap Cycle">
+
 
 You can read about their origins and inventors in [www.magiran.com/paper/2219482?lang=en](https://www.magiran.com/paper/2219482?lang=en).

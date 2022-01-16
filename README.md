@@ -41,7 +41,7 @@ Source : [www.magiran.com/paper/2219482?lang=en](https://www.magiran.com/paper/2
 
 <img src="https://i.postimg.cc/Vv9v1Y4m/arithmetic-persian-128-leap-cycle.jpg" width="750" alt="Arithmetic Persian 128 Leap Cycle">
 
-<img src="https://i.postimg.cc/bN8dgtNJ/arithmetic-persian-2820-1-leap-cycle.jpg" width="885" alt="Arithmetic Persian 2820 Leap Cycle">
+<img src="https://i.postimg.cc/bN8dgtNJ/arithmetic-persian-2820-1-leap-cycle.jpg" width="900" alt="Arithmetic Persian 2820 Leap Cycle">
 
 <img src="https://i.postimg.cc/650qmpyh/arithmetic-persian-2820-2-leap-cycle.jpg" width="750" alt="Arithmetic Persian 2820 Leap Cycle">
 

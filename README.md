@@ -2,6 +2,8 @@
 
 > Source code of DLL files will be in [another repository](https://github.com/ben-izd/cDateFunctions-Source).
 
+> This repository also have [Wiki](https://github.com/ben-izd/cDateFunctions/wiki) with examples for some functions.
+
 You can read more about their performance and capabilities in [Wolfram Community Post](https://community.wolfram.com/groups/-/m/t/2434669).
 
 How to use this Package:
